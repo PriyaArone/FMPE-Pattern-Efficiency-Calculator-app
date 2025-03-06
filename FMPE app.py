@@ -3,22 +3,24 @@ import streamlit as st
 import numpy as np
 
 def calculate_ploughing_efficiency(w, f, Sp, Se, n, L, W):
-    # Convert speed from km/h to m/s
-    Sp = Sp * (1000 / 3600)
-    Se = Se * (1000 / 3600)
 
     # Basic calculations
     trips = W / w  # Number of trips
-    time_per_furrow = f / Sp / 3600  # Convert seconds to hours
-    total_ploughing_time = trips * time_per_furrow
+    time_per_furrow = f / (1000*Sp)
+    total_ploughing_time = (f*w)/(1000*Sp*w)
 
     # Turning calculations
-    turning_time = (trips / n) * (f / Se / 3600)  # Convert seconds to hours
-    total_time = total_ploughing_time + turning_time
+    width_of_land = (W/((2*n)-1))
+    Average_turning_distance = (1/2)*(width_of_land)
+    Average_turning_for_one_turn = (Average_turning_distance)*(1/(1000*Se))
+    Total_turning_time = (W/w)*(W/(2((2*n)-1))*1000*Se)
+    Dead_furrow_finishing_time = ((n-0.5)*f)/(1000*Sp)
+    total_time = total_ploughing_time + Total_turning_time + Dead_furrow_finishing_time
 
     # Efficiencies
-    pattern_efficiency = (W * L) / (trips * w * f) * 100
+    pattern_efficiency = total_ploughing_time/total_time
     processing_efficiency = (total_ploughing_time / total_time) * 100
+    
 
     return total_time, processing_efficiency, pattern_efficiency
 
